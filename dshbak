@@ -17,40 +17,50 @@ for (my $i=0;$i<$count;$i++) {
     $v1=$data{$k1};
     $v2=$data{$k2};
     if ($v1 eq $v2) {
-    	$matchcnt[$i]++;
-    	$matchcnt[$j]++;
-    	$matchKey[$i].="$j~";
-    	$matchKey[$j].="$i~";
+        $matchcnt[$i]++;
+        $matchcnt[$j]++;
+        $matchKey[$i].="$j~";
+        $matchKey[$j].="$i~";
     }
   }
 }
 $max=0;
 $maxKey=-1;
 foreach $i (0..@matchcnt) {
-	if ($matchcnt[$i]>$max) {
-		$max=$matchcnt[$i];
-		$maxKey=$i;
-	}
+        if ($matchcnt[$i]>$max) {
+                $max=$matchcnt[$i];
+                $maxKey=$i;
+        }
+}
+if ($max==0) {
+        # there were no matches, each unique, force first
+        print "There are no match, showing first and deltas\n";
+        $max=1;
+        $maxKey=0;
+        $matchKey[0]="~$keys[0]";
 }
 print "$maxKey had the most Matches with $max\n";
 (@k)=split('~',$matchKey[$maxKey]);
 print "These machines all match ***************************\n";
 foreach $t (@k) {
-	print "*  $keys[$t]\n";
-	$done[$t]=1;
+        print "*  $keys[$t]\n";
+        $done{$keys[$t]}=1;
+        $done[$t]=1;
 }
-print "****************************************************\n";
+print "**********This is the data from the matches**********\n";
 print "$data{$keys[@k[0]]}";
-print "****************************************************\n";
+print "**********End of data from the matches***************\n";
 ($fh, $name) = mkstemp("tmpfileXXXXX");
 print $fh $data{$keys[@k[0]]};
-foreach $t (0..@matchcnt-1) {
-	if ($done[$t]!=1) {
-		($fh2, $name2) = mkstemp("tmpfileXXXXX");
-		$k=$keys[$t];
-		print "----------------------\n|\t$k\n----------------------\n";
-		print $fh2 "$data{$keys[$t]}";
-		print "*  $keys[$t]\n";
-		print `diff $name $name2`;
-	}
+foreach $t (sort keys %data) {
+        if ($done{$t}!=1) {
+                ($fh2, $name2) = mkstemp("tmpfileXXXXX");
+                print "\n********Deltas for $t*****************\n";
+                print $fh2 "$data{$t}";
+                print `diff $name $name2`;
+                `rm $name2`;
+                print "********End of deltas for $t**********\n";
+        }
 }
+`rm $name`;
+
