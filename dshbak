@@ -32,23 +32,27 @@ for (my $i=0;$i<$count;$i++) {
   }
 }
 $max=0;
-$maxKey=-1;
+$maxKey=0;
 foreach $i (0..@matchcnt) {
         if ($matchcnt[$i]>$max) {
                 $max=$matchcnt[$i];
                 $maxKey=$i;
         }
 }
-if ($max==0) {
-        # there were no matches, each unique, force first
-        print "There are no match, showing first and deltas\n";
-        $max=1;
-        $maxKey=0;
-        $matchKey[0]="~$keys[0]";
+#if ($max==0) {
+#        # there were no matches, each unique, force first
+#        print "There are no match, showing first and deltas\n";
+#        $max=1;
+#        $maxKey=0;
+#        $matchKey[0]="~$keys[0]";
+#}
+push @k,$maxKey;
+if ($matchKey[$maxKey] ne "") {
+        chop($matchKey[$maxKey]);
 }
-print "$maxKey had the most Matches with $max\n";
-(@k)=split('~',$matchKey[$maxKey]);
-print "These machines all match ***************************\n";
+(@k1)=split('~',$matchKey[$maxKey]);
+push @k,@k1;
+print "*** These machines all match ***********************\n";
 foreach $t (@k) {
         print "*  $keys[$t]\n";
         $done{$keys[$t]}=1;
