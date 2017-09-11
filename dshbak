@@ -1,0 +1,56 @@
+#!/usr/bin/perl
+use File::Temp;
+#use IO::Handle;
+#STDIN->autoflush(1);
+foreach $i (<>) {
+  ($m,$d)=$i=~/^(.*?):(.*)/sig;
+  $machines{$m}++;
+  $line{$m}++;
+  $data{"$m"}.="$d";
+}
+@keys=sort keys %machines;
+$count=@keys;
+for (my $i=0;$i<$count;$i++) {
+  for (my $j=$i+1;$j<$count;$j++) {
+    $k1=$keys[$i];
+    $k2=$keys[$j];
+    $v1=$data{$k1};
+    $v2=$data{$k2};
+    if ($v1 eq $v2) {
+    	$matchcnt[$i]++;
+    	$matchcnt[$j]++;
+    	$matchKey[$i].="$j~";
+    	$matchKey[$j].="$i~";
+    }
+  }
+}
+$max=0;
+$maxKey=-1;
+foreach $i (0..@matchcnt) {
+	if ($matchcnt[$i]>$max) {
+		$max=$matchcnt[$i];
+		$maxKey=$i;
+	}
+}
+print "$maxKey had the most Matches with $max\n";
+(@k)=split('~',$matchKey[$maxKey]);
+print "These machines all match ***************************\n";
+foreach $t (@k) {
+	print "*  $keys[$t]\n";
+	$done[$t]=1;
+}
+print "****************************************************\n";
+print "$data{$keys[@k[0]]}";
+print "****************************************************\n";
+($fh, $name) = mkstemp("tmpfileXXXXX");
+print $fh $data{$keys[@k[0]]};
+foreach $t (0..@matchcnt-1) {
+	if ($done[$t]!=1) {
+		($fh2, $name2) = mkstemp("tmpfileXXXXX");
+		$k=$keys[$t];
+		print "----------------------\n|\t$k\n----------------------\n";
+		print $fh2 "$data{$keys[$t]}";
+		print "*  $keys[$t]\n";
+		print `diff $name $name2`;
+	}
+}
