@@ -39,13 +39,6 @@ foreach $i (0..@matchcnt) {
                 $maxKey=$i;
         }
 }
-#if ($max==0) {
-#        # there were no matches, each unique, force first
-#        print "There are no match, showing first and deltas\n";
-#        $max=1;
-#        $maxKey=0;
-#        $matchKey[0]="~$keys[0]";
-#}
 push @k,$maxKey;
 if ($matchKey[$maxKey] ne "") {
         chop($matchKey[$maxKey]);
