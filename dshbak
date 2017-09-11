@@ -1,4 +1,11 @@
 #!/usr/bin/perl
+# 
+# Copywrite Sept 2017 
+# Joe Bryant
+# Joe.Bryant@Me.com
+# Apache 2.0
+# All rights reserved
+#
 use File::Temp;
 #use IO::Handle;
 #STDIN->autoflush(1);
